@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -31,6 +32,15 @@ namespace Example
     /// </summary>
     public partial class App : Application
     {
+        /// <summary>
+        /// Host는 다음과 같은 앱의 리소스와 수명 기능을 캡슐화 하는 개체이다.
+        /// DI, 로깅, Configuration, 앱 종료, IHostedService 구현
+        /// </summary>
+        public IHost Host
+        {
+            get;
+        }
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
