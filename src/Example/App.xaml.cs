@@ -42,6 +42,23 @@ namespace Example
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">서비스가 아니면 예외처리함</exception>
+        public static T GetService<T>()
+            where T : class
+        {
+            if ((App.Current as App)!.Host.Services.GetService(typeof(T)) is not T service)
+            {
+                throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
+            }
+
+            return service;
+        }
+
+        /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
@@ -54,10 +71,12 @@ namespace Example
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
-            m_window.Activate();
+            //m_window = new MainWindow();
+            //m_window.Activate();
+            base.OnLaunched(args);
+            // await App.GetService<IActivationSer>
         }
 
         private Window m_window;
