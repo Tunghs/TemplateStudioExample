@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using Example.Contracts.Services;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -42,7 +44,8 @@ namespace Example
         }
 
         /// <summary>
-        /// 
+        /// https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/keywords/where-generic-type-constraint
+        /// where 제약 조건
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -50,11 +53,13 @@ namespace Example
         public static T GetService<T>()
             where T : class
         {
+            // class 가 아니면 true를 반환
             if ((App.Current as App)!.Host.Services.GetService(typeof(T)) is not T service)
             {
                 throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
             }
 
+            // class라면 (App.Current as App)!.Host.Services.GetService(typeof(T))에 해당 하는 값을 service에 할당
             return service;
         }
 
@@ -65,6 +70,8 @@ namespace Example
         public App()
         {
             this.InitializeComponent();
+
+            Host = Microsoft.Extensions.Hosting.Host;
         }
 
         /// <summary>
@@ -73,12 +80,9 @@ namespace Example
         /// <param name="args">Details about the launch request and process.</param>
         protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            //m_window = new MainWindow();
-            //m_window.Activate();
             base.OnLaunched(args);
-            // await App.GetService<IActivationSer>
-        }
 
-        private Window m_window;
+            await App.GetService<IActivationService>().ActivateAsync(args);
+        }
     }
 }
