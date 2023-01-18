@@ -3,6 +3,7 @@
 
 using Example.Contracts.Services;
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -71,7 +72,15 @@ namespace Example
         {
             this.InitializeComponent();
 
-            Host = Microsoft.Extensions.Hosting.Host;
+            Host = Microsoft.Extensions.Hosting.Host.
+            CreateDefaultBuilder().
+            UseContentRoot(AppContext.BaseDirectory).
+            ConfigureServices((context, services) =>
+            {
+                // 기본 Activation Handler
+               // services.AddTransient<ActivationHandler>
+            }).
+            Build();
         }
 
         /// <summary>
