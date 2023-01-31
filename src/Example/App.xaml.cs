@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using Example.Contracts.Services;
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -42,24 +45,53 @@ namespace Example
         }
 
         /// <summary>
+        /// https://learn.microsoft.com/ko-kr/dotnet/csharp/language-reference/keywords/where-generic-type-constraint
+        /// where 제약 조건
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">서비스가 아니면 예외처리함</exception>
+        public static T GetService<T>()
+            where T : class
+        {
+            // class 가 아니면 true를 반환
+            if ((App.Current as App)!.Host.Services.GetService(typeof(T)) is not T service)
+            {
+                throw new ArgumentException($"{typeof(T)} needs to be registered in ConfigureServices within App.xaml.cs.");
+            }
+
+            // class라면 (App.Current as App)!.Host.Services.GetService(typeof(T))에 해당 하는 값을 service에 할당
+            return service;
+        }
+
+        /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
             this.InitializeComponent();
+
+            Host = Microsoft.Extensions.Hosting.Host.
+            CreateDefaultBuilder().
+            UseContentRoot(AppContext.BaseDirectory).
+            ConfigureServices((context, services) =>
+            {
+                // 기본 Activation Handler
+               // services.AddTransient<ActivationHandler>
+            }).
+            Build();
         }
 
         /// <summary>
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
-            m_window.Activate();
-        }
+            base.OnLaunched(args);
 
-        private Window m_window;
+            await App.GetService<IActivationService>().ActivateAsync(args);
+        }
     }
 }

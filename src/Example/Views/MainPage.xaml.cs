@@ -27,5 +27,7 @@ namespace Example.Views
         {
             this.InitializeComponent();
         }
+
+
     }
 }
